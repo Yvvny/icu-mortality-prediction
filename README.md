@@ -39,25 +39,25 @@ The project uses the following Python libraries:
 
 ## 4. Project Structure
 
+```
 icu-mortality-project/
 │
 ├── data/
-│ ├── patients.csv
-│ ├── admissions.csv
-│ ├── icustays.csv
+│   ├── patients.csv
+│   ├── admissions.csv
+│   ├── icustays.csv
 │
 ├── modules/
-│ ├── data_processor.py
-│ ├── model.py
-│ ├── utils.py
+│   ├── data_processor.py
+│   ├── model.py
+│   ├── utils.py
 │
 ├── tests/
-│ ├── test_model.py
+│   ├── test_model.py
 │
 ├── main.ipynb
 ├── README.md
-
----
+```
 
 ## 5. How to Run the Project
 
