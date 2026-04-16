@@ -1,0 +1,14 @@
+Project Proposal.pdf
+rubric.pdf
+LOCAL_RUBRIC_TODO.md
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
