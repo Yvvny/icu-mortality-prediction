@@ -196,6 +196,7 @@ Stevens ID: 20034233
 - supported model evaluation using F1-score and AUROC
 - assisted with data exploration and visualization
 - contributed to code organization and documentation
+- Updated by joking000
 
 ### Rui Yang
 Email: ryang34@stevens.edu  
