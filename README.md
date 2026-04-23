@@ -22,7 +22,19 @@ Files used by the current workflow:
 - `admissions.csv`
 - `icustays.csv`
 
-These files are expected inside the `data/` folder.
+For the reproducible public version of this repository, the `data/` folder uses the **MIMIC-IV Clinical Database Demo v2.2** files with the same table structure as the full dataset.
+
+Demo source:
+
+- `patients.csv.gz` from `hosp/`
+- `admissions.csv.gz` from `hosp/`
+- `icustays.csv.gz` from `icu/`
+
+Official demo dataset:
+
+- https://physionet.org/content/mimic-iv-demo/2.2/
+
+If you have authorized access to the full MIMIC-IV dataset, you can replace the demo CSV files with the full v2.2 versions using the same filenames and schema. The full dataset is not distributed in this repository.
 
 ## 3. Libraries and Dependencies
 
@@ -64,7 +76,7 @@ icu-mortality-prediction/
 
 ## 5. How to Run the Project
 
-1. Make sure the required data files are inside the `data/` folder.
+1. The repository already includes the demo v2.2 CSV files inside the `data/` folder for reproducible execution.
 2. Install dependencies:
 
 ```bash
@@ -78,6 +90,8 @@ python -m notebook main.ipynb
 ```
 
 4. Run all notebook cells to execute the full workflow.
+
+To use the full restricted-access MIMIC-IV dataset instead of the demo data, replace the three CSV files in `data/` with the full v2.2 versions while keeping the same filenames.
 
 ## 6. Classes and Program Design
 
