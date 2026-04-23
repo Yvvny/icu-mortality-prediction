@@ -2,155 +2,195 @@
 
 ## 1. Project Overview
 
-This project aims to predict ICU patient mortality using machine learning techniques on the MIMIC-IV dataset. The objective is to identify high-risk patients based on clinical and demographic features.
+This project predicts ICU patient mortality using machine learning on MIMIC-IV style tabular data. The workflow is organized as a notebook-driven pipeline with reusable Python modules for data processing, model training, evaluation, and visualization.
 
-The pipeline includes:
-- Data preprocessing and merging
-- Feature engineering
-- Model training
-- Model evaluation
-- Handling class imbalance using SMOTE
+The project includes:
 
----
+- data loading and merging
+- data cleaning and feature engineering
+- model training and evaluation
+- class imbalance handling with SMOTE / SMOTENC
+- notebook-based execution through `main.ipynb`
 
 ## 2. Dataset
 
-The project uses publicly available ICU data from the MIMIC-IV dataset.
+The project uses ICU-related tables derived from the MIMIC-IV dataset structure.
 
-Files used:
-- patients.csv
-- admissions.csv
-- icustays.csv
+Files used by the current workflow:
 
----
+- `patients.csv`
+- `admissions.csv`
+- `icustays.csv`
+
+These files are expected inside the `data/` folder.
 
 ## 3. Libraries and Dependencies
 
-The project uses the following Python libraries:
+Core libraries used in this project:
 
-- pandas
-- numpy
-- scikit-learn
-- imbalanced-learn (SMOTE)
-- matplotlib
-- pytest
+- `pandas`
+- `numpy`
+- `scikit-learn`
+- `imbalanced-learn`
+- `matplotlib`
+- `pytest`
+- `notebook`
 
----
+Install all dependencies with:
+
+```bash
+python -m pip install -r requirements.txt
+```
 
 ## 4. Project Structure
 
-```
-icu-mortality-project/
-│
-├── data/
-│   ├── patients.csv
-│   ├── admissions.csv
-│   ├── icustays.csv
-│
-├── modules/
-│   ├── data_processor.py
-│   ├── model.py
-│   ├── utils.py
-│
-├── tests/
-│   ├── test_model.py
-│
-├── main.ipynb
-├── README.md
+```text
+icu-mortality-prediction/
+|-- data/
+|   |-- patients.csv
+|   |-- admissions.csv
+|   `-- icustays.csv
+|-- modules/
+|   |-- data_processor.py
+|   |-- model.py
+|   `-- utils.py
+|-- tests/
+|   |-- test_model.py
+|   `-- test_model_synthetic.py
+|-- main.ipynb
+|-- README.md
+`-- requirements.txt
 ```
 
 ## 5. How to Run the Project
 
-1. Place dataset files inside the `data/` folder:
-   - patients.csv
-   - admissions.csv
-   - icustays.csv
+1. Make sure the required data files are inside the `data/` folder.
+2. Install dependencies:
 
-2. Install required libraries:
-pip install pandas numpy scikit-learn imbalanced-learn matplotlib pytest
+```bash
+python -m pip install -r requirements.txt
+```
 
-3. Open the notebook:
-main.ipynb
+3. Run the notebook:
 
-4. Run all cells to execute the pipeline.
+```bash
+python -m notebook main.ipynb
+```
 
----
+4. Run all notebook cells to execute the full workflow.
 
-## 6. Models Used
+## 6. Classes and Program Design
 
-The following models were implemented and compared:
+The project uses two meaningful classes:
 
-- Logistic Regression (Baseline)
-- Logistic Regression with SMOTE (to handle class imbalance)
+### `PatientDataProcessor`
+
+Responsible for:
+
+- loading CSV files
+- merging patient, admission, and ICU stay data
+- cleaning required fields
+- engineering modeling features
+
+### `MortalityPredictor`
+
+Responsible for:
+
+- receiving processed data from `PatientDataProcessor`
+- splitting train and test data
+- training machine learning models
+- evaluating model performance
+
+The class relationship is **composition**: `MortalityPredictor` can be initialized with a `PatientDataProcessor` object and uses the processed modeling data produced by that class.
+
+## 7. Functions
+
+The project includes multiple meaningful functions, including:
+
+- `plot_mortality_distribution(df)`
+- `plot_model_f1_scores(score_dict)`
+
+These functions support data interpretation and model comparison.
+
+## 8. Models Used
+
+The following models are implemented:
+
+- Logistic Regression
+- Logistic Regression with SMOTE / SMOTENC
 - Random Forest Classifier
 
----
+## 9. Evaluation Metrics
 
-## 7. Evaluation Metrics
-
-The models were evaluated using:
+The models are evaluated using:
 
 - Accuracy
 - F1 Score
-- AUROC (Area Under ROC Curve)
+- AUROC
+- Confusion Matrix
+- Classification Report
 
----
+## 10. Advanced Python Features Used
 
-## 8. Key Results
+To satisfy the project requirements, the code uses:
 
-- Logistic Regression achieved high accuracy but failed to detect mortality cases due to class imbalance.
-- Applying SMOTE significantly improved recall and F1-score for the minority class.
-- Random Forest provided a balance between accuracy and classification performance.
+- lambda functions
+- list comprehension
+- set operations
+- generator functions
+- built-in module `random`
+- operator overloading with `__str__()` and `__len__()`
 
----
+## 11. Exception Handling
 
-## 9. Advanced Python Features Used
+The code includes multiple exception-handling scenarios, including:
 
-- Lambda functions
-- List comprehension
-- Set operations
-- Generator functions
-- Built-in modules (random)
+- missing data files during loading
+- missing required columns in merged data
+- model training before calling `split_data()`
+- missing `mortality` target column in model input
 
----
+## 12. Testing
 
-## 10. Testing
+Pytest is used to validate:
 
-Pytest was used to validate:
-- Data processing pipeline
-- Model data splitting
+- the processed modeling columns
+- train/test data splitting
+- exception handling behavior
+- synthetic-data execution without relying on external CSV files
 
-Run tests using:
-pytest
+Run tests with:
 
+```bash
+python -m pytest -q
+```
 
----
-
-## 11. Team Members and Contributions
+## 13. Team Members and Contributions
 
 ### Vrushabh Anil Nikhade
 Email: vnikhade@stevens.edu  
 Stevens ID: 20036031
-- Designed and implemented data preprocessing pipeline
-- Developed machine learning models
-- Integrated full workflow and evaluation pipeline
+
+- designed and implemented the data preprocessing pipeline
+- developed the machine learning models
+- integrated the workflow into the project notebook
 
 ### Shipeng Ren
-Email: sren11@stevens.edu 
-Stevens ID: 20034233  
-- Model evaluation using F1-score and AUROC
-- Data exploration and visualization  
-- Code organization and documentation  
+Email: sren11@stevens.edu  
+Stevens ID: 20034233
+
+- supported model evaluation using F1-score and AUROC
+- assisted with data exploration and visualization
+- contributed to code organization and documentation
 
 ### Rui Yang
-Email: ryang34@stevens.edu 
-Stevens ID: 20028647  
-- Assisted in result interpretation
-- Testing and debugging  
-- Code organization and documentation  
+Email: ryang34@stevens.edu  
+Stevens ID: 20028647
 
----
+- assisted with result interpretation
+- contributed to testing and debugging
+- supported code organization and documentation
 
-## 12. Conclusion
+## 14. Conclusion
 
-This project demonstrates the importance of handling class imbalance in healthcare datasets. The use of SMOTE significantly improves the model's ability to detect high-risk ICU patients, making the system more clinically useful.
+This project demonstrates a complete notebook-based machine learning workflow for ICU mortality prediction using modular Python code. It highlights data preprocessing, feature engineering, imbalance handling, evaluation, and testing in a structure aligned with the course programming requirements.

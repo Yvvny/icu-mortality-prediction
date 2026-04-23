@@ -13,7 +13,7 @@ def test_data_processor_returns_required_columns():
     processor.feature_engineering()
 
     df = processor.get_model_data()
-    expected_columns = ["anchor_age", "gender_encoded", "los", "mortality"]
+    expected_columns = ["admission_age", "gender_encoded", "los", "mortality"]
 
     assert list(df.columns) == expected_columns
     assert len(df) > 0
@@ -29,9 +29,7 @@ def test_mortality_predictor_split_data():
     processor.clean_data()
     processor.feature_engineering()
 
-    df = processor.get_model_data()
-
-    predictor = MortalityPredictor(df)
+    predictor = MortalityPredictor(processor)
     predictor.split_data()
 
     assert predictor.X_train is not None
@@ -40,3 +38,4 @@ def test_mortality_predictor_split_data():
     assert predictor.y_test is not None
     assert len(predictor.X_train) > 0
     assert len(predictor.X_test) > 0
+    assert predictor.processor is processor

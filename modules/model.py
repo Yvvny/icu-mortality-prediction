@@ -1,19 +1,22 @@
 import pandas as pd
-from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     accuracy_score,
+    classification_report,
+    confusion_matrix,
     f1_score,
     roc_auc_score,
-    classification_report,
-    confusion_matrix
 )
+from sklearn.model_selection import train_test_split
 
 try:
-    from imblearn.over_sampling import SMOTE
+    from imblearn.over_sampling import SMOTE, SMOTENC
 except ImportError:
     SMOTE = None
+    SMOTENC = None
+
+from modules.data_processor import PatientDataProcessor
 
 
 class MortalityPredictor:
@@ -21,22 +24,42 @@ class MortalityPredictor:
     Class to train and evaluate ICU mortality prediction models.
     """
 
-    def __init__(self, data: pd.DataFrame):
+    def __init__(self, data_source):
         """
-        Initialize predictor with modeling dataframe.
+        Initialize predictor with either a processor object or modeling dataframe.
 
         Args:
-            data (pd.DataFrame): Data containing features and mortality target
+            data_source (PatientDataProcessor | pd.DataFrame): Processor object
+            or modeling dataframe containing features and mortality target
         """
-        self.data = data
-        self.X = data.drop("mortality", axis=1)
-        self.y = data["mortality"]
+        self.processor = None
+        if isinstance(data_source, PatientDataProcessor):
+            self.processor = data_source
+            data = self.processor.get_model_data()
+        else:
+            data = data_source
+
+        if data.empty:
+            raise ValueError("Model data cannot be empty")
+        if "mortality" not in data.columns:
+            raise ValueError("Model data must include a 'mortality' column")
+
+        self.data = data.copy()
+        self.X = self.data.drop("mortality", axis=1)
+        self.y = self.data["mortality"]
         self.X_train = None
         self.X_test = None
         self.y_train = None
         self.y_test = None
         self.models = {}
         self.results = {}
+
+    def _require_split_data(self):
+        """
+        Ensure train-test data has been created before training or evaluation.
+        """
+        if self.X_train is None or self.X_test is None or self.y_train is None or self.y_test is None:
+            raise RuntimeError("Run split_data() first")
 
     def __str__(self):
         """
@@ -66,8 +89,7 @@ class MortalityPredictor:
         """
         Train baseline logistic regression model.
         """
-        if self.X_train is None:
-            raise Exception("Run split_data() first")
+        self._require_split_data()
 
         model = LogisticRegression(max_iter=1000)
         model.fit(self.X_train, self.y_train)
@@ -77,14 +99,21 @@ class MortalityPredictor:
         """
         Train logistic regression model on SMOTE-balanced training data.
         """
-        if self.X_train is None:
-            raise Exception("Run split_data() first")
+        self._require_split_data()
 
         if SMOTE is None:
-            raise Exception("Install imbalanced-learn first using: pip install imbalanced-learn")
+            raise ImportError("Install imbalanced-learn first using: pip install imbalanced-learn")
 
-        smote = SMOTE(random_state=42)
-        X_train_smote, y_train_smote = smote.fit_resample(self.X_train, self.y_train)
+        categorical_features = []
+        if "gender_encoded" in self.X_train.columns:
+            categorical_features.append(self.X_train.columns.get_loc("gender_encoded"))
+
+        if categorical_features and SMOTENC is not None:
+            sampler = SMOTENC(categorical_features=categorical_features, random_state=42)
+        else:
+            sampler = SMOTE(random_state=42)
+
+        X_train_smote, y_train_smote = sampler.fit_resample(self.X_train, self.y_train)
 
         model = LogisticRegression(max_iter=1000)
         model.fit(X_train_smote, y_train_smote)
@@ -94,8 +123,7 @@ class MortalityPredictor:
         """
         Train random forest classifier.
         """
-        if self.X_train is None:
-            raise Exception("Run split_data() first")
+        self._require_split_data()
 
         model = RandomForestClassifier(
             n_estimators=100,
@@ -109,16 +137,15 @@ class MortalityPredictor:
         Evaluate trained model using accuracy, F1-score, AUROC,
         confusion matrix, and classification report.
         """
-        if self.X_test is None:
-            raise Exception("Run split_data() first")
+        self._require_split_data()
 
         if model_name not in self.models:
-            raise Exception(f"Model '{model_name}' not found")
+            raise ValueError(f"Model '{model_name}' not found")
 
         model = self.models[model_name]
         y_pred = model.predict(self.X_test)
 
-        if hasattr(model, "predict_proba"):
+        if hasattr(model, "predict_proba") and self.y_test.nunique() > 1:
             y_prob = model.predict_proba(self.X_test)[:, 1]
             auc = roc_auc_score(self.y_test, y_prob)
         else:
@@ -129,7 +156,7 @@ class MortalityPredictor:
             "f1_score": f1_score(self.y_test, y_pred),
             "auroc": auc,
             "confusion_matrix": confusion_matrix(self.y_test, y_pred),
-            "classification_report": classification_report(self.y_test, y_pred)
+            "classification_report": classification_report(self.y_test, y_pred, zero_division=0)
         }
 
         self.results[model_name] = results
