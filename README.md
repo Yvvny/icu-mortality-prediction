@@ -197,6 +197,7 @@ Stevens ID: 20034233
 - assisted with data exploration and visualization
 - contributed to code organization and documentation
 - update by jokaaa9524@gmail.com
+
 ### Rui Yang
 Email: ryang34@stevens.edu  
 Stevens ID: 20028647
