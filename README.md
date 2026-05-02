@@ -4,6 +4,8 @@
 
 This project predicts ICU patient mortality using machine learning on MIMIC-IV style tabular data. The workflow is organized as a notebook-driven pipeline with reusable Python modules for data processing, model training, evaluation, and visualization.
 
+The current workflow is a retrospective classification exercise using the demo dataset. Because length of stay (`los`) is included as a modeling feature, the results should be interpreted as a reproducible course-project demonstration rather than a real-time bedside prediction system.
+
 The project includes:
 
 - data loading and merging
@@ -40,13 +42,14 @@ If you have authorized access to the full MIMIC-IV dataset, you can replace the 
 
 Core libraries used in this project:
 
-- `pandas`
-- `numpy`
-- `scikit-learn`
-- `imbalanced-learn`
-- `matplotlib`
-- `pytest`
-- `notebook`
+- `pandas`: CSV loading, table merging, data cleaning, and feature engineering
+- `scikit-learn`: train/test splitting, model training, and model evaluation metrics
+- `imbalanced-learn`: SMOTE / SMOTENC handling for class imbalance
+- `matplotlib`: visualization of mortality distribution, model scores, confusion matrices, and feature importance
+- `pytest`: automated tests for processing, modeling, and exception handling
+- `notebook`: Jupyter Notebook execution for the main workflow
+
+The project has been tested with Python 3.14.
 
 Install all dependencies with:
 
@@ -196,11 +199,11 @@ Stevens ID: 20034233
 - supported model evaluation using F1-score and AUROC
 - assisted with data exploration and visualization
 - contributed to code organization and documentation
-- update by jokaaa9524@gmail.com
 
 ### Rui Yang
 Email: ryang34@stevens.edu  
 Stevens ID: 20028647
+GitHub username: Yvvny. Some local commits may appear under either `Yvvny` or `Rui Yang`.
 
 - assisted with result interpretation
 - contributed to testing and debugging
